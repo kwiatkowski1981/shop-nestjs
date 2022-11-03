@@ -76,4 +76,11 @@ export class ShopController {
   removeShopItem(@Param('id') id: string) {
     return this.shopService.removeOneShopItemById(id);
   }
+
+  @Delete('/removeDetailFromShopItem/:shopItemId')
+  @HttpCode(204)
+  removeShopItemDetail(@Param('id') id: string) {
+    return this.shopService.removeShopItemDetailQuery(id);
+  }
+
 }

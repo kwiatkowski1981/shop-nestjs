@@ -44,6 +44,17 @@ export class ShopService {
       .set(id);
   }
 
+  private async removeOneToOneEntityRelation(
+    shopItemId: string,
+    id: string,
+    propertyName: string,
+  ) {
+    return await this.dbBaseQuery()
+      .relation(ShopItemEntity, propertyName)
+      .of(shopItemId)
+      .remove(id);
+  }
+
   public async createNewShopItemQuery(
     productToCreate: ShopItemInterface,
   ): Promise<InsertResult> {
@@ -84,7 +95,7 @@ export class ShopService {
       .getMany();
   }
 
-  async findShopItemsBySearchTermQuery(
+  public async findShopItemsBySearchTermQuery(
     searchTerm: string,
   ): Promise<GetListOfShopItemsResponse> {
     this.logger.debug(
@@ -140,5 +151,14 @@ export class ShopService {
       .from(ShopItemEntity)
       .where('id = :id', { id })
       .execute();
+  }
+
+  public async removeShopItemDetailQuery(id: string) {
+    this.logger.debug(`Getting the ShopItem with id: ${id}`);
+    // todo find shopItem by id
+    // todo get the ID from its detail (if exists)
+    // todo remove the relation
+    // todo remove the entity from DB
+    // todo update the lastUpdateAt
   }
 }
