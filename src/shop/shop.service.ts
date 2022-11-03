@@ -84,6 +84,23 @@ export class ShopService {
       .getMany();
   }
 
+  async findShopItemsBySearchTermQuery(
+    searchTerm: string,
+  ): Promise<GetListOfShopItemsResponse> {
+    this.logger.debug(
+      `Printing the shopItem found by searchTerm: "${searchTerm}" `,
+    );
+    return await this.dbBaseQuery()
+      .select('shopItem')
+      .from(ShopItemEntity, 'shopItem')
+      .where('shopItem.description LIKE :searchTerm', {
+        searchTerm: `%${searchTerm}%`,
+      })
+      .leftJoinAndSelect('shopItem.details', 'details')
+      .orderBy('shopItem.id', 'DESC')
+      .getMany();
+  }
+
   public async findOneShopItemById(
     id: string,
   ): Promise<GetOneShopItemResponse> {
@@ -92,6 +109,7 @@ export class ShopService {
       .select('shopItem')
       .from(ShopItemEntity, 'shopItem')
       .where('shopItem.id = :id', { id })
+      .leftJoinAndSelect('shopItem.details', 'details')
       .getOne();
   }
 

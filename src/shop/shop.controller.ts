@@ -54,6 +54,14 @@ export class ShopController {
     return this.shopService.findOneShopItemById(id);
   }
 
+  @Get('/findBySearchTerm/:searchTerm')
+  @HttpCode(200)
+  findOneShopItemBySearchTerm(
+    @Param('searchTerm') searchTerm: string,
+  ): Promise<GetListOfShopItemsResponse> {
+    return this.shopService.findShopItemsBySearchTermQuery(searchTerm);
+  }
+
   @Patch(':id')
   @HttpCode(204)
   updateShopItem(
