@@ -146,7 +146,6 @@ export class ShopService {
       .where('id = :id', { id })
       .execute();
     this.logger.debug({ updateQuery });
-    // this.logger.debug(updateQuery.getSql());
     // UpdateResult { generatedMaps: [], raw: [], affected: 1 }
     return updateQuery;
   }
