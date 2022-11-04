@@ -33,26 +33,32 @@ export class ShopService {
       .execute();
   }
 
+  private async getShopItemDetailId(addDetailQuery: InsertResult) {
+    const { identifiers } = addDetailQuery;
+    const [{ id }] = identifiers;
+    this.logger.debug(`to id mnie chyba interesuje ${id}`);
+    return id;
+  }
+
   private async setOneToOneEntityRelation(
     shopItemId: string,
-    id: string,
+    ShopItemDetailId: string,
     propertyName: string,
   ) {
     return await this.dbBaseQuery()
       .relation(ShopItemEntity, propertyName)
       .of(shopItemId)
-      .set(id);
+      .set(ShopItemDetailId);
   }
 
   private async removeOneToOneEntityRelation(
     shopItemId: string,
-    id: string,
     propertyName: string,
   ) {
     return await this.dbBaseQuery()
       .relation(ShopItemEntity, propertyName)
       .of(shopItemId)
-      .remove(id);
+      .set(null);
   }
 
   public async createNewShopItemQuery(
@@ -68,7 +74,7 @@ export class ShopService {
     return query;
   }
 
-  public async createNewDetailAndSetNewUpdateDateToGivenShopItemQuery(
+  public async createNewShopItemDetailAndSetLastUpdateAtValueToNewDateQuery(
     shopItemId: string,
     addDetail: ShopItemDetailInterface,
     // return this.setOneToOneEntityRelation(shopItemId, id, 'shopItem'); nie zwraca nic czyli typ Void
@@ -78,11 +84,13 @@ export class ShopService {
       .into(ShopItemDetailsEntity)
       .values([{ ...addDetail }])
       .execute();
-    const { identifiers } = addDetailQuery;
-    const [{ id }] = identifiers;
-    this.logger.debug(`to id mnie chyba interesuje ${id}`);
+    const ShopItemDetailId = await this.getShopItemDetailId(addDetailQuery);
     await this.setLastUpdateAtValue(shopItemId);
-    return await this.setOneToOneEntityRelation(shopItemId, id, 'shopItem');
+    return await this.setOneToOneEntityRelation(
+      shopItemId,
+      ShopItemDetailId,
+      'shopItem',
+    );
   }
 
   public async findAllShopItems(): Promise<GetListOfShopItemsResponse> {
@@ -143,22 +151,20 @@ export class ShopService {
     return updateQuery;
   }
 
-  public async removeOneShopItemById(id: string) {
+  public async removeOneShopItemById(id: string, entity: any) {
     this.logger.debug(`Deleting a ShopItem with id: ${id}`);
     return this.dataSource
       .createQueryBuilder()
       .delete()
-      .from(ShopItemEntity)
+      .from(entity)
       .where('id = :id', { id })
       .execute();
   }
 
-  public async removeShopItemDetailQuery(id: string) {
-    this.logger.debug(`Getting the ShopItem with id: ${id}`);
-    // todo find shopItem by id
-    // todo get the ID from its detail (if exists)
-    // todo remove the relation
-    // todo remove the entity from DB
-    // todo update the lastUpdateAt
+  public async removeShopItemDetailQuery(shopItemId: string) {
+    const { details } = await this.findOneShopItemById(shopItemId);
+    await this.removeOneToOneEntityRelation(shopItemId, 'details');
+    await this.removeOneShopItemById(details.id, ShopItemDetailsEntity);
+    await this.setLastUpdateAtValue(shopItemId);
   }
 }

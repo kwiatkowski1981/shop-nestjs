@@ -17,6 +17,7 @@ import {
   ShopItemInterface,
 } from '../types';
 import { InsertResult, UpdateResult } from 'typeorm';
+import { ShopItemEntity } from './entities/shop-item.entity';
 
 @Controller('shop')
 export class ShopController {
@@ -36,7 +37,7 @@ export class ShopController {
     @Param('shopItemId') shopItemId: string,
     @Body() addDetail: ShopItemDetailInterface,
   ): Promise<void> {
-    return this.shopService.createNewDetailAndSetNewUpdateDateToGivenShopItemQuery(
+    return this.shopService.createNewShopItemDetailAndSetLastUpdateAtValueToNewDateQuery(
       shopItemId,
       addDetail,
     );
@@ -73,14 +74,16 @@ export class ShopController {
 
   @Delete(':id')
   @HttpCode(204)
-  removeShopItem(@Param('id') id: string) {
-    return this.shopService.removeOneShopItemById(id);
+  removeShopItem(@Param('id') id: string, entity: any) {
+    return this.shopService.removeOneShopItemById(
+      id,
+      (entity = ShopItemEntity),
+    );
   }
 
-  @Delete('/removeDetailFromShopItem/:shopItemId')
+  @Delete('/removeDetailFromShopItem/:id')
   @HttpCode(204)
   removeShopItemDetail(@Param('id') id: string) {
     return this.shopService.removeShopItemDetailQuery(id);
   }
-
 }
