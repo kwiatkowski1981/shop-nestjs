@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -68,8 +69,7 @@ export class ShopItemEntity extends BaseEntity {
   @JoinColumn()
   details: ShopItemDetailsEntity;
 
-  // @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.items)
-  @OneToOne(() => ShopItemDetailsEntity)
+  @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.items)
   @JoinColumn()
   basket: BasketEntity;
 

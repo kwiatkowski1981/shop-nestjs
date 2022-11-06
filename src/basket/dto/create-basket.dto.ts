@@ -2,9 +2,11 @@ import {
   IsBoolean,
   IsDateString,
   IsDecimal,
+  IsEmpty,
   IsInt,
   IsUUID,
 } from 'class-validator';
+import { ShopItemInterface } from '../../types';
 
 export class CreateBasketDto {
   @IsUUID()
@@ -28,8 +30,8 @@ export class CreateBasketDto {
   @IsBoolean()
   isEmpty?: boolean;
 
-  // @IsEmpty()
-  // items: ShopItemInterface[];
+  @IsEmpty()
+  items: ShopItemInterface[];
 
   @IsInt()
   itemsCount?: number;

@@ -1,6 +1,7 @@
 // import { AddProductDto } from '../basket/dto/add-product.dto';
 
 import { InsertResult, UpdateResult } from 'typeorm';
+import { ShopItemInterface } from './shop-item-interface';
 
 export interface BasketInterface {
   id?: string;
@@ -10,7 +11,7 @@ export interface BasketInterface {
   itemRemoveCountdown?: number;
   basketBrutto?: number;
   isEmpty?: boolean;
-  // items: ShopItemInterface[];
+  items: ShopItemInterface[];
   itemsCount?: number;
 }
 

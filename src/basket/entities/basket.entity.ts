@@ -1,5 +1,8 @@
-import { BaseEntity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ShopItemEntity } from "../../shop/entities/shop-item.entity";
+import { ShopItemInterface } from "../../types";
 
+@Entity()
 export class BasketEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -38,11 +41,11 @@ export class BasketEntity extends BaseEntity {
   })
   isEmpty: boolean;
 
-  // @OneToMany(
-  //   () => ShopItemEntity,
-  //   (shopItem: ShopItemEntity) => shopItem.basket,
-  // )
-  // items: ShopItemInterface[];
+  @OneToMany(
+    () => ShopItemEntity,
+    (shopItem: ShopItemEntity) => shopItem.basket,
+  )
+  items: ShopItemInterface[];
 
   itemsCount: number;
 }
