@@ -5,11 +5,11 @@ import { UserModule } from './user/user.module';
 import { ShopModule } from './shop/shop.module';
 import { BasketModule } from './basket/basket.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSourceOptionsDev } from '../db/data-source.dev';
+import { dataSourceOptions } from '../db/data-source.dev';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(dataSourceOptionsDev),
+    TypeOrmModule.forRoot(dataSourceOptions),
     UserModule,
     ShopModule,
     BasketModule,

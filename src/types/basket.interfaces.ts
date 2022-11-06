@@ -1,5 +1,22 @@
 // import { AddProductDto } from '../basket/dto/add-product.dto';
 
+import { InsertResult, UpdateResult } from 'typeorm';
+
+export interface BasketInterface {
+  id?: string;
+  createAt?: Date;
+  lastUpdateAt?: Date;
+  canStayInBasket?: Date;
+  itemRemoveCountdown?: number;
+  basketBrutto?: number;
+  isEmpty?: boolean;
+  // items: ShopItemInterface[];
+  itemsCount?: number;
+}
+
+export type createBasketResponse = InsertResult;
+export type updateBasketResponse = UpdateResult;
+
 export type AddProductToBasketResponse =
   | {
       isSuccess: true;

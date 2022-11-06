@@ -1,23 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
   HttpCode,
   Inject,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import {
+  createShopItemResponse,
   GetListOfShopItemsResponse,
   GetOneShopItemResponse,
   ShopItemDetailInterface,
   ShopItemInterface,
+  updateShopItemResponse,
 } from '../types';
-import { InsertResult, UpdateResult } from 'typeorm';
-import { ShopItemEntity } from './entities/shop-item.entity';
 
 @Controller('shop')
 export class ShopController {
@@ -27,7 +27,7 @@ export class ShopController {
   @HttpCode(201)
   createNewShopItem(
     @Body() shopItemToCreate: ShopItemInterface,
-  ): Promise<InsertResult> {
+  ): Promise<createShopItemResponse> {
     return this.shopService.createNewShopItemQuery(shopItemToCreate);
   }
 
@@ -68,17 +68,14 @@ export class ShopController {
   updateShopItem(
     @Param('id') id: string,
     @Body() shopItemToUpdate: ShopItemInterface,
-  ): Promise<UpdateResult> {
+  ): Promise<updateShopItemResponse> {
     return this.shopService.updateOneShopItemById(id, shopItemToUpdate);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  removeShopItem(@Param('id') id: string, entity: any) {
-    return this.shopService.removeOneShopItemById(
-      id,
-      (entity = ShopItemEntity),
-    );
+  removeShopItem(@Param('id') id: string) {
+    return this.shopService.removeOneShopItemById(id);
   }
 
   @Delete('/removeDetailFromShopItem/:id')

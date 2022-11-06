@@ -8,6 +8,7 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
+import { BasketEntity } from '../../basket/entities/basket.entity';
 
 export class CreateShopItemDto {
   @IsUUID()
@@ -41,4 +42,8 @@ export class CreateShopItemDto {
   wasEverBought?: boolean;
 
   details?: ShopItemDetailsEntity | null;
+
+  basket?: BasketEntity;
+
+  basketId?: string;
 }

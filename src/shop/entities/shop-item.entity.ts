@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ShopItemDetailsEntity } from './shop-item-details.entity';
+import { BasketEntity } from '../../basket/entities/basket.entity';
 
 @Entity()
 export class ShopItemEntity extends BaseEntity {
@@ -66,4 +67,12 @@ export class ShopItemEntity extends BaseEntity {
   })
   @JoinColumn()
   details: ShopItemDetailsEntity;
+
+  // @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.items)
+  @OneToOne(() => ShopItemDetailsEntity)
+  @JoinColumn()
+  basket: BasketEntity;
+
+  @Column({ nullable: true })
+  basketId: string;
 }

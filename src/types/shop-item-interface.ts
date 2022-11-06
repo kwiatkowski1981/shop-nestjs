@@ -1,5 +1,6 @@
 import { ShopItemDetailsEntity } from '../shop/entities/shop-item-details.entity';
 import { InsertResult, UpdateResult } from 'typeorm';
+import { BasketEntity } from '../basket/entities/basket.entity';
 
 export interface ShopItemInterface {
   id?: string;
@@ -11,6 +12,8 @@ export interface ShopItemInterface {
   boughtCounter?: number;
   wasEverBought?: boolean;
   details?: ShopItemDetailsEntity | null;
+  basket?: BasketEntity;
+  basketId?: string;
 }
 
 export type GetListOfShopItemsResponse = ShopItemInterface[];
@@ -27,5 +30,5 @@ export interface ShopItemDetailInterface {
   name: string;
 }
 
-export type GetOneShopItemDetailResponse = ShopItemDetailInterface;
-export type CreateShopItemDetailResponse = ShopItemDetailInterface;
+export type createShopItemResponse = InsertResult;
+export type updateShopItemResponse = UpdateResult;
