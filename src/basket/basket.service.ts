@@ -1,16 +1,20 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
-import { DataSource, InsertResult } from 'typeorm';
-import { ShopService } from '../shop/shop.service';
+import { DataSource } from 'typeorm';
+import { ProductService } from '../product/product.service';
 import { BasketEntity } from './entities/basket.entity';
-import { UpdateBasketDto } from './dto/update-basket.dto';
-import { BasketInterface } from '../types';
+import {
+  BasketInterface,
+  createBasketResponse,
+  getBasketResponse,
+  updateBasketResponse,
+} from '../types';
 
 @Injectable()
 export class BasketService {
   private readonly logger = new Logger(BasketService.name);
   constructor(
-    @Inject(forwardRef(() => ShopService))
-    private readonly shopService: ShopService,
+    @Inject(forwardRef(() => ProductService))
+    private readonly shopService: ProductService,
     @Inject(DataSource) private dataSource: DataSource,
   ) {}
 
@@ -18,7 +22,7 @@ export class BasketService {
     return this.dataSource.createQueryBuilder();
   }
 
-  public async createNewBasketQuery(): Promise<InsertResult> {
+  public async createNewBasketQuery(): Promise<createBasketResponse> {
     this.logger.debug('Creating a new Basket');
     const query = await this.dbBaseQuery()
       .insert()
@@ -31,7 +35,7 @@ export class BasketService {
 
   public async addShopItemToTheBasketQuery(
     shopItemToInput: BasketInterface,
-  ): Promise<InsertResult> {
+  ): Promise<createBasketResponse> {
     this.logger.debug('Adding ShopItems to the Basket');
     const query = await this.dbBaseQuery()
       .insert()
@@ -42,25 +46,41 @@ export class BasketService {
     return query;
   }
 
-  public async findAll(): Promise<BasketInterface[]> {
-    this.logger.debug(`Printing all DB BasketItems`);
+  public async findAllBasketsQuery(): Promise<BasketInterface[]> {
+    this.logger.debug(`Printing all DB BasketProducts`);
     return await this.dbBaseQuery()
-      .select('basketItem')
-      .from(BasketEntity, 'basketItem')
-      .orderBy('basketItem.id', 'DESC')
-      // .leftJoinAndSelect('shopItem.items', 'items')
+      .select('basketProduct')
+      .from(BasketEntity, 'basketProduct')
+      .orderBy('basketProduct.id', 'DESC')
       .getMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} basket`;
+  public async findBasketByIdQuery(id: string): Promise<getBasketResponse> {
+    this.logger.debug(`Printing BasketProduct with ID: ${id}.`);
+    return await this.dbBaseQuery()
+      .select('basketProduct')
+      .from(BasketEntity, 'basketProduct')
+      .where('basketProduct.id = :id', { id })
+      .getOneOrFail();
   }
 
-  update(id: number, updateBasketDto: UpdateBasketDto) {
-    return `This action updates a #${id} basket`;
+  public async updateBasketQuery(
+    basket: BasketInterface,
+    itemToUpdate: BasketInterface,
+  ): Promise<updateBasketResponse> {
+    return await BasketEntity.save({
+      ...basket,
+      ...itemToUpdate,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} basket`;
+  public async removeBasketQuery(id: string) {
+    this.logger.debug(`Deleting a BasketEntity with ID: ${id}`);
+    return await this.dataSource
+      .createQueryBuilder()
+      .delete()
+      .from(BasketEntity)
+      .where('id = :id', { id })
+      .execute();
   }
 }

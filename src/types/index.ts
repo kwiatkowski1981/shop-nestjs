@@ -1,2 +1,2 @@
-export * from './shop-item-interface';
+export * from './product-interface';
 export * from './basket.interfaces';

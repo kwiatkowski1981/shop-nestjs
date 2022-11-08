@@ -11,7 +11,7 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: ['dist/**/*.entity{.ts,.js}'],
-  // entities: [ShopItemEntity, ShopItemDetailsEntity, BasketEntity, UserEntity],
+  // entities: [ShopItemEntity, ProductDetailsEntity, BasketEntity, UserEntity],
   synchronize: true,
   logging: false,
 };

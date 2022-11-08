@@ -1,8 +1,8 @@
-import { ShopItemDetailsEntity } from '../shop/entities/shop-item-details.entity';
+import { ProductDetailsEntity } from '../product/entities/product-details.entity';
 import { InsertResult, UpdateResult } from 'typeorm';
 import { BasketEntity } from '../basket/entities/basket.entity';
 
-export interface ShopItemInterface {
+export interface ProductInterface {
   id?: string;
   name: string;
   description: string;
@@ -11,24 +11,24 @@ export interface ShopItemInterface {
   lastUpdateAt?: Date;
   boughtCounter?: number;
   wasEverBought?: boolean;
-  details?: ShopItemDetailsEntity | null;
+  details?: ProductDetailsEntity | null;
   basket?: BasketEntity;
   basketId?: string;
 }
 
-export type GetListOfShopItemsResponse = ShopItemInterface[];
-export type GetOneShopItemResponse = ShopItemInterface;
+export type GetListOfProductsResponse = ProductInterface[];
+export type GetOneProductResponse = ProductInterface;
 
 export interface GetPaginatedListOfProductResponse {
-  entities: ShopItemInterface[];
+  entities: ProductInterface[];
   currentPage: number;
   pagesCount: number;
 }
 
-export interface ShopItemDetailInterface {
+export interface ProductDetailInterface {
   id?: string;
   name: string;
 }
 
-export type createShopItemResponse = InsertResult;
-export type updateShopItemResponse = UpdateResult;
+export type createProductResponse = InsertResult;
+export type updateProductResponse = UpdateResult;

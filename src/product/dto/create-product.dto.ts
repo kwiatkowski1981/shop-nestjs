@@ -1,4 +1,4 @@
-import { ShopItemDetailsEntity } from '../entities/shop-item-details.entity';
+import { ProductDetailsEntity } from '../entities/product-details.entity';
 import {
   IsBoolean,
   IsDateString,
@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { BasketEntity } from '../../basket/entities/basket.entity';
 
-export class CreateShopItemDto {
+export class CreateProductDto {
   @IsUUID()
   id?: string;
 
@@ -41,7 +41,7 @@ export class CreateShopItemDto {
   @IsBoolean()
   wasEverBought?: boolean;
 
-  details?: ShopItemDetailsEntity | null;
+  details?: ProductDetailsEntity | null;
 
   basket?: BasketEntity;
 

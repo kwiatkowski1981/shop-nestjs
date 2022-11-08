@@ -6,7 +6,7 @@ import {
   IsInt,
   IsUUID,
 } from 'class-validator';
-import { ShopItemInterface } from '../../types';
+import { ProductInterface } from '../../types';
 
 export class CreateBasketDto {
   @IsUUID()
@@ -31,7 +31,7 @@ export class CreateBasketDto {
   isEmpty?: boolean;
 
   @IsEmpty()
-  items: ShopItemInterface[];
+  items: ProductInterface[];
 
   @IsInt()
   itemsCount?: number;

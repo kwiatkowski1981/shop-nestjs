@@ -1,24 +1,24 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ShopItemEntity } from "../../shop/entities/shop-item.entity";
-import { ShopItemInterface } from "../../types";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { ProductEntity } from '../../product/entities/product.entity';
+import { ProductInterface } from '../../types';
 
 @Entity()
 export class BasketEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    type: 'timestamp',
-    nullable: false,
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @CreateDateColumn()
   createAt: Date;
 
-  @Column({
-    type: 'timestamp',
-    nullable: false,
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @UpdateDateColumn()
   lastUpdateAt: Date;
 
   @Column({
@@ -33,7 +33,7 @@ export class BasketEntity extends BaseEntity {
   })
   itemRemoveCountdown: number;
 
-  @Column()
+  @Column({ nullable: true })
   basketBrutto: number;
 
   @Column({
@@ -41,11 +41,8 @@ export class BasketEntity extends BaseEntity {
   })
   isEmpty: boolean;
 
-  @OneToMany(
-    () => ShopItemEntity,
-    (shopItem: ShopItemEntity) => shopItem.basket,
-  )
-  items: ShopItemInterface[];
+  @OneToMany(() => ProductEntity, (product: ProductEntity) => product.basket)
+  products: ProductInterface[];
 
-  itemsCount: number;
+  productsCount: number;
 }

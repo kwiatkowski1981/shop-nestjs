@@ -1,17 +1,21 @@
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { ShopItemDetailsEntity } from './shop-item-details.entity';
+import { ProductDetailsEntity } from './product-details.entity';
 import { BasketEntity } from '../../basket/entities/basket.entity';
+import { ShopEntity } from '../../shop/entities/shop.entity';
 
 @Entity()
-export class ShopItemEntity extends BaseEntity {
+export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -38,18 +42,10 @@ export class ShopItemEntity extends BaseEntity {
   })
   price: number;
 
-  @Column({
-    type: 'timestamp',
-    nullable: false,
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column({
-    type: 'timestamp',
-    nullable: false,
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @UpdateDateColumn()
   lastUpdateAt: Date;
 
   @Column({
@@ -62,17 +58,22 @@ export class ShopItemEntity extends BaseEntity {
   })
   wasEverBought: boolean;
 
-  @OneToOne(() => ShopItemDetailsEntity, {
+  @OneToOne(() => ProductDetailsEntity, {
     eager: true,
-    // cascade: true,
+    onDelete: 'CASCADE', // powinno byc po stronie detail zeby sie tez detail skasowal
   })
   @JoinColumn()
-  details: ShopItemDetailsEntity;
+  details: ProductDetailsEntity;
 
-  @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.items)
+  @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.products, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn()
   basket: BasketEntity;
 
   @Column({ nullable: true })
   basketId: string;
+
+  @OneToMany(() => ShopEntity, (shop: ShopEntity) => shop.products)
+  shop: ShopEntity;
 }
