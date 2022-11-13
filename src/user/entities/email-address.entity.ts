@@ -3,24 +3,28 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserEntity } from './user.entity';
 
 @Entity()
-export class ProductDetailsEntity extends BaseEntity {
+export class EmailAddressEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({
-    nullable: true,
-    length: 50,
+    length: 255,
   })
-  name: string;
+  emailAddress: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   lastUpdateAt: Date;
+
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.emailAddressId)
+  userId: UserEntity;
 }

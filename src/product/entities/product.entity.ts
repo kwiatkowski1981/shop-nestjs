@@ -3,16 +3,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
+  JoinColumn, ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  UpdateDateColumn
+} from "typeorm";
 import { ProductDetailsEntity } from './product-details.entity';
 import { BasketEntity } from '../../basket/entities/basket.entity';
 import { ShopEntity } from '../../shop/entities/shop.entity';
+import { ProductDecryptionEntity } from './product-decryption.entity';
 
 @Entity()
 export class ProductEntity extends BaseEntity {
@@ -21,17 +22,9 @@ export class ProductEntity extends BaseEntity {
 
   @Column({
     nullable: false,
-    length: 25,
+    length: 50,
   })
   name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 500,
-    nullable: false,
-    default: 'kupa',
-  })
-  description: string;
 
   @Column({
     type: 'decimal',
@@ -42,31 +35,50 @@ export class ProductEntity extends BaseEntity {
   })
   price: number;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  lastUpdateAt: Date;
+  @Column({
+    default: false,
+  })
+  isDiscounted: boolean;
 
   @Column({
-    default: 0,
+    type: 'integer',
+    nullable: false,
   })
-  boughtCounter: number;
+  count: number;
 
   @Column({
     default: false,
   })
   wasEverBought: boolean;
 
+  @Column({
+    default: 0,
+  })
+  boughtCounter: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  lastUpdateAt: Date;
+
   @OneToOne(() => ProductDetailsEntity, {
     eager: true,
-    onDelete: 'CASCADE', // powinno byc po stronie detail zeby sie tez detail skasowal
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
-  details: ProductDetailsEntity;
+  detailId: ProductDetailsEntity;
+
+  @OneToOne(() => ProductDecryptionEntity, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  descriptionId: ProductDecryptionEntity;
 
   @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.products, {
     onDelete: 'SET NULL',
+    eager: true,
   })
   @JoinColumn()
   basket: BasketEntity;
@@ -74,6 +86,6 @@ export class ProductEntity extends BaseEntity {
   @Column({ nullable: true })
   basketId: string;
 
-  @OneToMany(() => ShopEntity, (shop: ShopEntity) => shop.products)
-  shop: ShopEntity;
+  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.products)
+  shopId: ShopEntity;
 }

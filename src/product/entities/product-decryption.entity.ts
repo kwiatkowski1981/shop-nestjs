@@ -8,15 +8,15 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class ProductDetailsEntity extends BaseEntity {
+export class ProductDecryptionEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({
     nullable: true,
-    length: 50,
+    length: 1000,
   })
-  name: string;
+  description: string;
 
   @CreateDateColumn()
   createdAt: Date;

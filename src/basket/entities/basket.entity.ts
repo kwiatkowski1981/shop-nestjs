@@ -2,13 +2,14 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  UpdateDateColumn
+} from "typeorm";
 import { ProductEntity } from '../../product/entities/product.entity';
 import { ProductInterface } from '../../types';
+import { ShopEntity } from "../../shop/entities/shop.entity";
 
 @Entity()
 export class BasketEntity extends BaseEntity {
@@ -43,6 +44,9 @@ export class BasketEntity extends BaseEntity {
 
   @OneToMany(() => ProductEntity, (product: ProductEntity) => product.basket)
   products: ProductInterface[];
+
+  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.baskets)
+  shopId: ShopEntity;
 
   productsCount: number;
 }
