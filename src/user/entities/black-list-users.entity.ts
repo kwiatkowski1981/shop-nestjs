@@ -13,7 +13,7 @@ export class BlackListUsersEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(() => UserEntity, (user: UserEntity) => user.blackListId)
+  @OneToMany(() => UserEntity, (user: UserEntity) => user.blackList)
   userId: UserEntity[];
 
   @CreateDateColumn()

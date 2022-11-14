@@ -17,7 +17,7 @@ export class ShopEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToMany(() => ProductEntity, (product: ProductEntity) => product.shopId)
+  @ManyToMany(() => ProductEntity, (product: ProductEntity) => product.shop)
   @JoinTable()
   products: ProductEntity[];
 
@@ -28,7 +28,7 @@ export class ShopEntity extends BaseEntity {
   @JoinTable()
   customers: CustomerEntity[];
 
-  @ManyToMany(() => UserEntity, (user: UserEntity) => user.shopId)
+  @ManyToMany(() => UserEntity, (user: UserEntity) => user.shop)
   @JoinTable()
   users: UserEntity[];
 

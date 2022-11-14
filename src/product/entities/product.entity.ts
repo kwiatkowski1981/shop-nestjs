@@ -3,17 +3,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn, ManyToMany,
+  JoinColumn,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 import { ProductDetailsEntity } from './product-details.entity';
 import { BasketEntity } from '../../basket/entities/basket.entity';
 import { ShopEntity } from '../../shop/entities/shop.entity';
-import { ProductDecryptionEntity } from './product-decryption.entity';
+import { ProductDescriptionEntity } from './product-description.entity';
 
 @Entity()
 export class ProductEntity extends BaseEntity {
@@ -44,7 +44,7 @@ export class ProductEntity extends BaseEntity {
     type: 'integer',
     nullable: false,
   })
-  count: number;
+  quantity: number;
 
   @Column({
     default: false,
@@ -62,19 +62,27 @@ export class ProductEntity extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  @OneToOne(() => ProductDetailsEntity, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(
+    () => ProductDetailsEntity,
+    (detail: ProductDetailsEntity) => detail.product,
+    {
+      eager: true,
+      onDelete: 'CASCADE',
+    },
+  )
   @JoinColumn()
-  detailId: ProductDetailsEntity;
+  details: ProductDetailsEntity;
 
-  @OneToOne(() => ProductDecryptionEntity, {
-    eager: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(
+    () => ProductDescriptionEntity,
+    (description: ProductDescriptionEntity) => description.product,
+    {
+      eager: true,
+      onDelete: 'CASCADE',
+    },
+  )
   @JoinColumn()
-  descriptionId: ProductDecryptionEntity;
+  description: ProductDescriptionEntity;
 
   @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.products, {
     onDelete: 'SET NULL',
@@ -83,9 +91,6 @@ export class ProductEntity extends BaseEntity {
   @JoinColumn()
   basket: BasketEntity;
 
-  @Column({ nullable: true })
-  basketId: string;
-
   @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.products)
-  shopId: ShopEntity;
+  shop: ShopEntity;
 }

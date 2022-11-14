@@ -3,12 +3,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProductEntity } from './product.entity';
 
 @Entity()
-export class ProductDecryptionEntity extends BaseEntity {
+export class ProductDescriptionEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -23,4 +25,13 @@ export class ProductDecryptionEntity extends BaseEntity {
 
   @UpdateDateColumn()
   lastUpdateAt: Date;
+
+  @OneToOne(
+    () => ProductEntity,
+    (product: ProductEntity) => product.description,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  product: ProductEntity;
 }

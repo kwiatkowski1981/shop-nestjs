@@ -19,6 +19,6 @@ export class AddressEntity extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.addressId)
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.address)
   users: UserEntity[];
 }

@@ -4,12 +4,10 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { AttachmentEntity } from './attachment.entity';
 
 @Entity()
 export class EmailEntity extends BaseEntity {
@@ -37,12 +35,6 @@ export class EmailEntity extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  // @ManyToOne(() => UserEntity, (user: UserEntity) => user.emailId)
-  // userId: UserEntity;
-
-  @OneToMany(
-    () => AttachmentEntity,
-    (attachmentId: AttachmentEntity) => attachmentId.emailId,
-  )
-  attachmentId: AttachmentEntity;
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.email)
+  userId: UserEntity;
 }

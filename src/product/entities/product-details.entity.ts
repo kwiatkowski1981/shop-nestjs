@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProductEntity } from './product.entity';
 
 @Entity()
 export class ProductDetailsEntity extends BaseEntity {
@@ -14,7 +16,7 @@ export class ProductDetailsEntity extends BaseEntity {
 
   @Column({
     nullable: true,
-    length: 50,
+    length: 100,
   })
   name: string;
 
@@ -23,4 +25,9 @@ export class ProductDetailsEntity extends BaseEntity {
 
   @UpdateDateColumn()
   lastUpdateAt: Date;
+
+  @OneToOne(() => ProductEntity, (product: ProductEntity) => product.details, {
+    onDelete: 'CASCADE',
+  })
+  product: ProductEntity;
 }

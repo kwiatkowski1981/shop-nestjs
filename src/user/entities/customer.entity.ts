@@ -37,7 +37,7 @@ export class CustomerEntity extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  @OneToMany(() => UserEntity, (user: UserEntity) => user.customerId)
+  @OneToMany(() => UserEntity, (user: UserEntity) => user.customer)
   userId: UserEntity[];
 
   @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.customers)

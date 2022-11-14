@@ -13,7 +13,7 @@ export class PowerUserEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(() => UserEntity, (user: UserEntity) => user.powerUserId)
+  @OneToMany(() => UserEntity, (user: UserEntity) => user.powerUser)
   userId: UserEntity[];
 
   @CreateDateColumn()

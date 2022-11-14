@@ -18,10 +18,6 @@ export class CreateProductDto {
   @Length(5, 55, { message: 'The name length is wrong' })
   name: string;
 
-  @IsString()
-  @Length(5, 500, { message: 'The description length is wrong' })
-  description: string;
-
   @IsDecimal({
     precision: 8,
     scale: 2,

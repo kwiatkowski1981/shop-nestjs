@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { ProductEntity } from './entities/product.entity';
 import { DataSource } from 'typeorm';
@@ -12,11 +13,15 @@ import {
   createProductResponse,
   GetListOfProductsResponse,
   GetOneProductResponse,
+  ProductDescriptionInterface,
   ProductDetailInterface,
   ProductInterface,
   updateProductResponse,
 } from '../types';
 import { ProductDetailsEntity } from './entities/product-details.entity';
+import { ProductDescriptionEntity } from './entities/product-description.entity';
+import { UpdateProductDetailsDto } from './dto/update-product-details.dto';
+import { UpdateProductDescriptionDto } from './dto/update-product-desription.dto';
 
 @Injectable()
 export class ProductService {
@@ -31,37 +36,49 @@ export class ProductService {
     return this.dataSource.createQueryBuilder();
   }
 
+  private async createNewItemQuery(
+    itemToCreate: any, // itemToCreate <T> have to be the Interface of item to create
+    entity: any, // Entity of item to create
+  ): Promise<createProductResponse> {
+    const query = await this.dbBaseQuery()
+      .insert()
+      .into(entity)
+      .values([{ ...itemToCreate }])
+      .execute();
+    this.logger.debug({ query });
+    return query;
+  }
+
   private async getProductDetailId(addDetailQuery: createProductResponse) {
     const { identifiers } = addDetailQuery;
     const [{ id }] = identifiers;
-    this.logger.debug(`to id dostaje po stworzeniu productDetail o ID: ${id}`);
     return id;
   }
 
   private async setOneToOneEntityRelation(
-    shopItemId: string,
-    ShopItemDetailId: string,
+    productId: string,
+    productPropertyId: string,
     propertyName: string,
-  ) {
+  ): Promise<void> {
     return await this.dbBaseQuery()
       .relation(ProductEntity, propertyName)
-      .of(shopItemId)
-      .set(ShopItemDetailId);
+      .of(productId)
+      .set(productPropertyId);
   }
 
   private async removeOneToOneEntityRelation(
-    shopItemId: string,
+    productId: string,
     entity: any,
     propertyName: string,
-  ) {
+  ): Promise<void> {
+    this.logger.debug('removing relation');
     return await this.dbBaseQuery()
       .relation(entity, propertyName)
-      .of(shopItemId)
+      .of(productId)
       .set(null);
   }
 
   private async removeOneItemById(id: string, entity: any) {
-    this.logger.debug(`Deleting a Product with id: ${id}`);
     return this.dataSource
       .createQueryBuilder()
       .delete()
@@ -70,17 +87,10 @@ export class ProductService {
       .execute();
   }
 
-  public async createNewShopItemQuery(
+  public async createNewProductQuery(
     productToCreate: ProductInterface,
   ): Promise<createProductResponse> {
-    this.logger.debug('Creating new Product');
-    const query = await this.dbBaseQuery()
-      .insert()
-      .into(ProductEntity)
-      .values([{ ...productToCreate }])
-      .execute();
-    this.logger.debug({ query });
-    return query;
+    return await this.createNewItemQuery(productToCreate, ProductEntity);
   }
 
   public async createNewProductDetailQuery(
@@ -88,20 +98,40 @@ export class ProductService {
     addDetail: ProductDetailInterface,
   ): Promise<void> {
     const product = await this.findProductById(productId);
-    this.logger.debug({ product });
-    if (product.details.id !== null) {
-      throw new BadRequestException('Product already exists');
+    if (product.details !== null) {
+      throw new BadRequestException('Product Detail already exists');
     }
-    const addDetailQuery = await this.dbBaseQuery()
-      .insert()
-      .into(ProductDetailsEntity)
-      .values([{ ...addDetail }])
-      .execute();
+    const addDetailQuery = await this.createNewItemQuery(
+      addDetail,
+      ProductDetailsEntity,
+    );
     const productDetailId = await this.getProductDetailId(addDetailQuery);
     return await this.setOneToOneEntityRelation(
       productId,
       productDetailId,
       'details',
+    );
+  }
+
+  public async createNewProductDescriptionQuery(
+    productId: string,
+    addDescription: ProductDescriptionInterface,
+  ): Promise<void> {
+    const product = await this.findProductById(productId);
+    if (product.description !== null) {
+      throw new BadRequestException('Product Description already exists');
+    }
+    const addDescriptionQuery = await this.createNewItemQuery(
+      addDescription,
+      ProductDescriptionEntity,
+    );
+    const productDescriptionId = await this.getProductDetailId(
+      addDescriptionQuery,
+    );
+    return await this.setOneToOneEntityRelation(
+      productId,
+      productDescriptionId,
+      'description',
     );
   }
 
@@ -112,6 +142,7 @@ export class ProductService {
       .from(ProductEntity, 'product')
       .orderBy('product.id', 'DESC')
       .leftJoinAndSelect('product.details', 'details')
+      .leftJoinAndSelect('product.description', 'description')
       .getMany();
   }
 
@@ -128,17 +159,19 @@ export class ProductService {
         searchTerm: `%${searchTerm}%`,
       })
       .leftJoinAndSelect('product.details', 'details')
+      .leftJoinAndSelect('product.description', 'description')
       .orderBy('product.id', 'DESC')
       .getMany();
   }
 
   public async findProductById(id: string): Promise<GetOneProductResponse> {
-    this.logger.debug(`Printing the ShopItem with id: ${id}`);
+    this.logger.debug(`Printing the Product with id: ${id}`);
     return await this.dbBaseQuery()
       .select('product')
       .from(ProductEntity, 'product')
       .where('product.id = :id', { id })
       .leftJoinAndSelect('product.details', 'details')
+      .leftJoinAndSelect('product.description', 'description')
       .getOne();
   }
 
@@ -158,19 +191,65 @@ export class ProductService {
     // UpdateResult { generatedMaps: [], raw: [], affected: 1 }
     return updateQuery;
   }
-
-  public async removeProductById(shopItemId: string) {
-    return this.removeOneItemById(shopItemId, ProductEntity);
+  // todo ************************************************************************************************
+  public async updateProductDetailsQuery(
+    details: ProductDetailsEntity,
+    detailToUpdate: UpdateProductDetailsDto,
+  ): Promise<ProductDetailsEntity> {
+    this.logger.debug(`Update encji ProductDetailsEntity wyszukanej po id`);
+    return await ProductDetailsEntity.save({
+      ...details,
+      ...detailToUpdate,
+    });
   }
 
-  public async removeProductDetailQuery(shopItemId: string) {
-    const { details } = await this.findProductById(shopItemId);
+  public async updateProductDescriptionQuery(
+    description: ProductDescriptionEntity,
+    descriptionToUpdate: UpdateProductDescriptionDto,
+  ) {
+    this.logger.debug(`Update encji ProductDescriptionEntity wyszukanej po id`);
+    return await ProductDetailsEntity.save({
+      ...description,
+      ...descriptionToUpdate,
+    });
+  }
+  // todo ************************************************************************************************
+  public async removeProductDetailQuery(productId: string) {
+    const { details } = await this.findProductById(productId);
     await this.removeOneToOneEntityRelation(
-      shopItemId,
+      productId,
       ProductEntity,
       'details',
     );
-    // await this.setLastUpdateAtValue(shopItemId);
+    this.logger.debug(`Deleting the ProductDetail with id: ${details.id}`);
     return await this.removeOneItemById(details.id, ProductDetailsEntity);
+  }
+
+  public async removeProductDescriptionQuery(productId: string) {
+    const { description } = await this.findProductById(productId);
+    await this.removeOneToOneEntityRelation(
+      productId,
+      ProductEntity,
+      'description',
+    );
+    this.logger.debug(
+      `Deleting the ProductDescription with id: ${description.id}`,
+    );
+    return await this.removeOneItemById(
+      description.id,
+      ProductDescriptionEntity,
+    );
+  }
+
+  public async removeProductById(productId: string) {
+    const { details, description } = await this.findProductById(productId);
+    if (details) {
+      await this.removeProductDetailQuery(productId);
+    }
+    if (description) {
+      await this.removeProductDetailQuery(productId);
+    }
+    this.logger.debug(`Deleting a Product with id: ${productId}`);
+    return this.removeOneItemById(productId, ProductEntity);
   }
 }

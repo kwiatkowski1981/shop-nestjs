@@ -14,7 +14,7 @@ import { AddressEntity } from './address.entity';
 import { CustomerEntity } from './customer.entity';
 import { BlackListUsersEntity } from './black-list-users.entity';
 import { ShopEntity } from '../../shop/entities/shop.entity';
-import { EmailAddressEntity } from './email-address.entity';
+import { EmailEntity } from './email.entity';
 
 @Entity()
 export class UserEntity extends BaseEntity {
@@ -77,29 +77,26 @@ export class UserEntity extends BaseEntity {
     () => PowerUserEntity,
     (powerUser: PowerUserEntity) => powerUser.userId,
   )
-  powerUserId: PowerUserEntity;
+  powerUser: PowerUserEntity;
 
   @ManyToOne(
     () => CustomerEntity,
     (customer: CustomerEntity) => customer.userId,
   )
-  customerId: CustomerEntity;
+  customer: CustomerEntity;
 
   @OneToMany(() => AddressEntity, (address: AddressEntity) => address.id)
-  addressId: AddressEntity;
+  address: AddressEntity;
 
   @ManyToOne(
     () => BlackListUsersEntity,
     (blackListUsers: BlackListUsersEntity) => blackListUsers.id,
   )
-  blackListId: BlackListUsersEntity;
+  blackList: BlackListUsersEntity;
 
-  @OneToMany(
-    () => EmailAddressEntity,
-    (email: EmailAddressEntity) => email.userId,
-  )
-  emailAddressId: EmailAddressEntity[];
+  @OneToMany(() => EmailEntity, (email: EmailEntity) => email.userId)
+  email: EmailEntity[];
 
   @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.id)
-  shopId: ShopEntity;
+  shop: ShopEntity;
 }
