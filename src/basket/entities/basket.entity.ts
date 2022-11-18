@@ -2,14 +2,16 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  Entity, ManyToMany,
+  Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 import { ProductEntity } from '../../product/entities/product.entity';
 import { ProductInterface } from '../../types';
-import { ShopEntity } from "../../shop/entities/shop.entity";
+import { ShopEntity } from '../../shop/entities/shop.entity';
 
 @Entity()
 export class BasketEntity extends BaseEntity {
@@ -34,7 +36,13 @@ export class BasketEntity extends BaseEntity {
   })
   itemRemoveCountdown: number;
 
-  @Column({ nullable: true })
+  @Column({
+    type: 'decimal',
+    nullable: true,
+    default: 0,
+    precision: 10,
+    scale: 2,
+  })
   basketBrutto: number;
 
   @Column({
@@ -42,11 +50,20 @@ export class BasketEntity extends BaseEntity {
   })
   isEmpty: boolean;
 
-  @OneToMany(() => ProductEntity, (product: ProductEntity) => product.basket)
-  products: ProductInterface[];
+  @ManyToMany(() => ProductEntity, (product: ProductEntity) => product.baskets)
+  @JoinTable()
+  products: ProductEntity[];
 
   @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.baskets)
   shopId: ShopEntity;
 
   productsCount: number;
+
+  constructor() {
+    super();
+  }
+
+  static createNewBasket() {
+    return new BasketEntity();
+  }
 }

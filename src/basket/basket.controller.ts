@@ -17,7 +17,6 @@ import {
   getBasketResponse,
   updateBasketResponse,
 } from '../types';
-import { InsertResult } from 'typeorm';
 
 @Controller('basket')
 export class BasketController {
@@ -29,12 +28,13 @@ export class BasketController {
     return this.basketService.createNewBasketQuery();
   }
 
-  @Post('/putBasketItemIntoTheBasket')
-  @HttpCode(201)
+  @Patch('/putProductIntoTheBasket/:basketId')
+  @HttpCode(204)
   addShopItemToTheBasket(
-    @Body() basketItem: BasketInterface,
-  ): Promise<InsertResult> {
-    return this.basketService.addShopItemToTheBasketQuery(basketItem);
+    @Param('basketId') basketId: string,
+    @Body() productId: string,
+  ): Promise<any> {
+    return this.basketService.addShopItemToTheBasketQuery(basketId, productId);
   }
 
   @Get('/')

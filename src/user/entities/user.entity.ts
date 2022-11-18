@@ -14,7 +14,6 @@ import { AddressEntity } from './address.entity';
 import { CustomerEntity } from './customer.entity';
 import { BlackListUsersEntity } from './black-list-users.entity';
 import { ShopEntity } from '../../shop/entities/shop.entity';
-import { EmailEntity } from './email.entity';
 
 @Entity()
 export class UserEntity extends BaseEntity {
@@ -57,7 +56,7 @@ export class UserEntity extends BaseEntity {
   @Column({
     default: false,
   })
-  isACustomer: boolean;
+  isCustomer: boolean;
 
   @Column({
     default: false,
@@ -93,9 +92,6 @@ export class UserEntity extends BaseEntity {
     (blackListUsers: BlackListUsersEntity) => blackListUsers.id,
   )
   blackList: BlackListUsersEntity;
-
-  @OneToMany(() => EmailEntity, (email: EmailEntity) => email.userId)
-  email: EmailEntity[];
 
   @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.id)
   shop: ShopEntity;

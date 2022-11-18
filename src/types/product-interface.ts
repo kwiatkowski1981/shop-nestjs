@@ -24,21 +24,11 @@ export interface ProductInterface {
 export type GetListOfProductsResponse = ProductInterface[];
 export type GetOneProductResponse = ProductInterface;
 
+export type createProductResponse = InsertResult;
+export type updateProductResponse = UpdateResult;
+
 export interface GetPaginatedListOfProductResponse {
   entities: ProductInterface[];
   currentPage: number;
   pagesCount: number;
 }
-
-export interface ProductDetailInterface {
-  id?: string;
-  name: string;
-}
-
-export interface ProductDescriptionInterface {
-  id?: string;
-  description: string;
-}
-
-export type createProductResponse = InsertResult;
-export type updateProductResponse = UpdateResult;

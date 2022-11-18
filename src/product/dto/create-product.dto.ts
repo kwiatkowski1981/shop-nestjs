@@ -5,15 +5,11 @@ import {
   IsDecimal,
   IsInt,
   IsString,
-  IsUUID,
   Length,
 } from 'class-validator';
 import { BasketEntity } from '../../basket/entities/basket.entity';
 
 export class CreateProductDto {
-  @IsUUID()
-  id?: string;
-
   @IsString()
   @Length(5, 55, { message: 'The name length is wrong' })
   name: string;

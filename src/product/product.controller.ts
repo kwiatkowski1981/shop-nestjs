@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Inject,
+  Logger,
   NotFoundException,
   Param,
   Patch,
@@ -25,6 +26,7 @@ import { UpdateProductDescriptionDto } from './dto/update-product-desription.dto
 
 @Controller('products')
 export class ProductController {
+  private readonly logger = new Logger(ProductController.name);
   constructor(@Inject(ProductService) private productService: ProductService) {}
 
   @Post('/')
@@ -87,39 +89,38 @@ export class ProductController {
   ): Promise<updateProductResponse> {
     return this.productService.updateProductById(id, productToUpdate);
   }
-  // todo ************************************************************************************************
-  @Patch(':id')
+
+  @Patch('/updateProductDetails/:id')
   @HttpCode(204)
   public async updateProductDetails(
     @Param('id') id: string,
-    @Body() productDetailsToUpdate: UpdateProductDetailsDto,
-  ): Promise<UpdateProductDetailsDto> {
+    @Body() input: UpdateProductDetailsDto,
+  ) {
     const { details } = await this.productService.findProductById(id);
     if (!details) {
       throw new NotFoundException();
     }
-    return this.productService.updateProductDetailsQuery(
-      details,
-      productDetailsToUpdate,
-    );
+    return this.productService.updateProductDetailsQuery(details, input);
   }
 
-  @Patch(':id')
+  @Patch('/updateProductDescription/:id')
   @HttpCode(204)
   public async updateProductDescription(
     @Param('id') id: string,
-    @Body() productDescriptionToUpdate: UpdateProductDescriptionDto,
-  ): Promise<UpdateProductDescriptionDto> {
+    @Body() input: UpdateProductDescriptionDto,
+  ) {
     const { description } = await this.productService.findProductById(id);
+    this.logger.debug(description);
     if (!description) {
       throw new NotFoundException();
     }
+    this.logger.debug(description);
     return this.productService.updateProductDescriptionQuery(
       description,
-      productDescriptionToUpdate,
+      input,
     );
   }
-  // todo ************************************************************************************************
+
   @Delete(':id')
   @HttpCode(204)
   removeShopItem(@Param('id') id: string) {

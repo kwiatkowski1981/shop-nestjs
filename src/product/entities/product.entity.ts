@@ -3,13 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
+  JoinColumn, JoinTable,
   ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  UpdateDateColumn
+} from "typeorm";
 import { ProductDetailsEntity } from './product-details.entity';
 import { BasketEntity } from '../../basket/entities/basket.entity';
 import { ShopEntity } from '../../shop/entities/shop.entity';
@@ -84,12 +84,11 @@ export class ProductEntity extends BaseEntity {
   @JoinColumn()
   description: ProductDescriptionEntity;
 
-  @ManyToOne(() => BasketEntity, (basket: BasketEntity) => basket.products, {
+  @ManyToMany(() => BasketEntity, (basket: BasketEntity) => basket.products, {
     onDelete: 'SET NULL',
     eager: true,
   })
-  @JoinColumn()
-  basket: BasketEntity;
+  baskets: BasketEntity[];
 
   @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.products)
   shop: ShopEntity;

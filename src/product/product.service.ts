@@ -4,10 +4,9 @@ import {
   Inject,
   Injectable,
   Logger,
-  NotFoundException,
 } from '@nestjs/common';
 import { ProductEntity } from './entities/product.entity';
-import { DataSource } from 'typeorm';
+import { DataSource, InsertResult } from 'typeorm';
 import { BasketService } from '../basket/basket.service';
 import {
   createProductResponse,
@@ -39,7 +38,7 @@ export class ProductService {
   private async createNewItemQuery(
     itemToCreate: any, // itemToCreate <T> have to be the Interface of item to create
     entity: any, // Entity of item to create
-  ): Promise<createProductResponse> {
+  ): Promise<InsertResult> {
     const query = await this.dbBaseQuery()
       .insert()
       .into(entity)
@@ -191,29 +190,33 @@ export class ProductService {
     // UpdateResult { generatedMaps: [], raw: [], affected: 1 }
     return updateQuery;
   }
-  // todo ************************************************************************************************
+
   public async updateProductDetailsQuery(
     details: ProductDetailsEntity,
-    detailToUpdate: UpdateProductDetailsDto,
+    input: UpdateProductDetailsDto,
   ): Promise<ProductDetailsEntity> {
-    this.logger.debug(`Update encji ProductDetailsEntity wyszukanej po id`);
+    this.logger.debug(
+      `Update encji ProductDetailsEntity wyszukanej po id ${details.id}`,
+    );
     return await ProductDetailsEntity.save({
       ...details,
-      ...detailToUpdate,
+      ...input,
     });
   }
 
   public async updateProductDescriptionQuery(
     description: ProductDescriptionEntity,
-    descriptionToUpdate: UpdateProductDescriptionDto,
-  ) {
-    this.logger.debug(`Update encji ProductDescriptionEntity wyszukanej po id`);
-    return await ProductDetailsEntity.save({
+    input: UpdateProductDescriptionDto,
+  ): Promise<ProductDescriptionEntity> {
+    this.logger.debug(
+      `Update encji ProductDescriptionEntity wyszukanej po id: ${description.id}`,
+    );
+    return await ProductDescriptionEntity.save({
       ...description,
-      ...descriptionToUpdate,
+      ...input,
     });
   }
-  // todo ************************************************************************************************
+
   public async removeProductDetailQuery(productId: string) {
     const { details } = await this.findProductById(productId);
     await this.removeOneToOneEntityRelation(
