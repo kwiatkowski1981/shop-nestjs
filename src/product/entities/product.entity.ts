@@ -3,13 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn, JoinTable,
+  JoinColumn,
   ManyToMany,
-  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 import { ProductDetailsEntity } from './product-details.entity';
 import { BasketEntity } from '../../basket/entities/basket.entity';
 import { ShopEntity } from '../../shop/entities/shop.entity';
@@ -86,10 +85,15 @@ export class ProductEntity extends BaseEntity {
 
   @ManyToMany(() => BasketEntity, (basket: BasketEntity) => basket.products, {
     onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
     eager: true,
   })
   baskets: BasketEntity[];
 
-  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.products)
+  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.products, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    eager: true,
+  })
   shop: ShopEntity;
 }

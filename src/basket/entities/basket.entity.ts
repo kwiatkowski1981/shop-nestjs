@@ -5,12 +5,10 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ProductEntity } from '../../product/entities/product.entity';
-import { ProductInterface } from '../../types';
 import { ShopEntity } from '../../shop/entities/shop.entity';
 
 @Entity()
@@ -46,15 +44,31 @@ export class BasketEntity extends BaseEntity {
   basketBrutto: number;
 
   @Column({
+    nullable: true,
+  })
+  totalPrice: number;
+
+  @Column({
     default: true,
   })
   isEmpty: boolean;
 
-  @ManyToMany(() => ProductEntity, (product: ProductEntity) => product.baskets)
+  @ManyToMany(
+    () => ProductEntity,
+    (product: ProductEntity) => product.baskets,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
   @JoinTable()
   products: ProductEntity[];
 
-  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.baskets)
+  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.baskets, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    eager: true,
+  })
   shopId: ShopEntity;
 
   productsCount: number;

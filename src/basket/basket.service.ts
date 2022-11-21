@@ -1,5 +1,4 @@
 import {
-  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -13,10 +12,10 @@ import {
   BasketInterface,
   createBasketResponse,
   getBasketResponse,
-  ProductInterface,
   updateBasketResponse,
 } from '../types';
-import { ProductEntity } from '../product/entities/product.entity';
+import { CalculateProductPrice } from '../calculations/calculate.product-price';
+import { CalculateProductTax } from '../calculations/calculate.vat';
 
 @Injectable()
 export class BasketService {
@@ -25,6 +24,10 @@ export class BasketService {
     @Inject(forwardRef(() => ProductService))
     private productService: ProductService,
     @Inject(DataSource) private dataSource: DataSource,
+    @Inject(CalculateProductPrice)
+    private calculateProductPrice: CalculateProductPrice,
+    @Inject(CalculateProductTax)
+    private calculateProductTax: CalculateProductTax,
   ) {}
 
   private async createNewBasket2(): Promise<BasketInterface> {
@@ -46,8 +49,7 @@ export class BasketService {
     return query;
   }
 
-  // todo dodawanie nowego przedmiotu to musi byc update koszyka
-  public async addShopItemToTheBasketQuery(
+  public async addProductToTheBasketByUpdatingItQuery(
     basketId: string,
     productId: string,
   ) {
@@ -59,34 +61,41 @@ export class BasketService {
       throw new NotFoundException('Basket not found!');
     }
     const { products } = basket;
-    if (!basket.isEmpty && basket.products === []) {
-      this.logger.debug('Basket is not empty!!!');
-      this.logger.debug([products]);
+    if (basket.products === []) {
+      // Todo jak tablica [ ...jest pusta ] to krzycz !!!!!!!
+
+      this.logger.debug('Basket is empty!!!');
+      // this.logger.debug([products]);
+    } else if (basket.products !== []) {
+      this.logger.error('Basket is not empty!!!');
+      // this.logger.debug([products]);
       // throw new ForbiddenException('Nihoooojaaaaaaaa!');
     }
-
     this.logger.debug(`I'm looking for a Product in the store's DataBank..`);
     const [id] = Object.values(productId);
     const product = await this.productService.findProductById(id);
     if (!product) {
       throw new NotFoundException('Product not found!');
     }
-    this.logger.debug('Adding Products to the Basket');
-    // todo nie wiem jak dodac produkt do koszyka..
+    // todo jak wstawić basketBrutto: finalTaxedPrice
+    const finalPrice =
+      this.calculateProductPrice.calculateTotalBruttoPrice(products);
+    const finalTaxedPrice =
+      this.calculateProductTax.calculateProductBruttoPrice(finalPrice);
+    this.logger.error(finalTaxedPrice);
 
-    // todo  NIE ROBIC TEGO QUERYBUILDEREM !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     return await BasketEntity.save({
       ...basket,
       products: [...basket.products, product],
       isEmpty: false,
-      basketBrutto: product.price,
+      basketBrutto: Number(finalTaxedPrice),
     });
 
     // const updateQuery = await this.dbBaseQuery()
     //   .update(BasketEntity)
     //   .set({
     //     ...basket,
-    //     products: [{ ...product }],
+    //     products: [{ ...basket.products }, { product }],
     //     isEmpty: false,
     //     basketBrutto: product.price,
     //   })
@@ -102,6 +111,9 @@ export class BasketService {
       .select('basketProduct')
       .from(BasketEntity, 'basketProduct')
       .orderBy('basketProduct.id', 'DESC')
+      .leftJoinAndSelect('basketProduct.products', 'product')
+      .leftJoinAndSelect('product.details', 'details')
+      .leftJoinAndSelect('product.description', 'description')
       .getMany();
   }
 
@@ -111,6 +123,9 @@ export class BasketService {
       .select('basketProduct')
       .from(BasketEntity, 'basketProduct')
       .where('basketProduct.id = :id', { id })
+      .leftJoinAndSelect('basketProduct.products', 'product')
+      .leftJoinAndSelect('product.details', 'details')
+      .leftJoinAndSelect('product.description', 'description')
       .getOneOrFail();
   }
 

@@ -7,6 +7,7 @@ import { BasketModule } from './basket/basket.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from '../db/data-source.dev';
 import { ShopModule } from './shop/shop.module';
+import { CalculationsModule } from './calculations/calculations.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ShopModule } from './shop/shop.module';
     ProductModule,
     BasketModule,
     ShopModule,
+    CalculationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

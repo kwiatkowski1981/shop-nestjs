@@ -34,7 +34,10 @@ export class BasketController {
     @Param('basketId') basketId: string,
     @Body() productId: string,
   ): Promise<any> {
-    return this.basketService.addShopItemToTheBasketQuery(basketId, productId);
+    return this.basketService.addProductToTheBasketByUpdatingItQuery(
+      basketId,
+      productId,
+    );
   }
 
   @Get('/')
