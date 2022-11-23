@@ -4,12 +4,17 @@ import {
   IsDateString,
   IsDecimal,
   IsInt,
+  IsNumber,
   IsString,
+  IsUUID,
   Length,
 } from 'class-validator';
-import { BasketEntity } from '../../basket/entities/basket.entity';
+import { ProductDescriptionEntity } from '../entities/product-description.entity';
 
 export class CreateProductDto {
+  @IsUUID()
+  id: string;
+
   @IsString()
   @Length(5, 55, { message: 'The name length is wrong' })
   name: string;
@@ -21,11 +26,11 @@ export class CreateProductDto {
   })
   price: number;
 
-  @IsDateString()
-  createdAt?: Date;
+  @IsNumber()
+  quantity: number;
 
-  @IsDateString()
-  lastUpdateAt?: Date;
+  @IsBoolean()
+  isDiscounted?: boolean;
 
   @IsInt()
   boughtCounter?: number;
@@ -33,9 +38,13 @@ export class CreateProductDto {
   @IsBoolean()
   wasEverBought?: boolean;
 
+  @IsDateString()
+  createdAt?: Date;
+
+  @IsDateString()
+  lastUpdateAt?: Date;
+
   details?: ProductDetailsEntity | null;
 
-  basket?: BasketEntity;
-
-  basketId?: string;
+  description?: ProductDescriptionEntity | null;
 }

@@ -12,7 +12,7 @@ import {
   BasketInterface,
   createBasketResponse,
   getBasketResponse,
-  updateBasketResponse,
+  ProductInterface,
 } from '../types';
 import { CalculateProductPrice } from '../calculations/calculate.product-price';
 import { CalculateProductTax } from '../calculations/calculate.vat';
@@ -53,9 +53,6 @@ export class BasketService {
     basketId: string,
     productId: string,
   ) {
-    this.logger.debug(
-      `I'm looking for a shopping cart in the store's DataBank..`,
-    );
     const basket = await this.findBasketByIdQuery(basketId);
     if (!basket.id) {
       throw new NotFoundException('Basket not found!');
@@ -63,30 +60,23 @@ export class BasketService {
     const { products } = basket;
     if (basket.products === []) {
       // Todo jak tablica [ ...jest pusta ] to krzycz !!!!!!!
-
-      this.logger.debug('Basket is empty!!!');
-      // this.logger.debug([products]);
     } else if (basket.products !== []) {
       this.logger.error('Basket is not empty!!!');
-      // this.logger.debug([products]);
       // throw new ForbiddenException('Nihoooojaaaaaaaa!');
     }
-    this.logger.debug(`I'm looking for a Product in the store's DataBank..`);
     const [id] = Object.values(productId);
     const product = await this.productService.findProductById(id);
     if (!product) {
       throw new NotFoundException('Product not found!');
     }
-    // todo jak wstawić basketBrutto: finalTaxedPrice
-    const finalPrice =
-      this.calculateProductPrice.calculateTotalBruttoPrice(products);
     const finalTaxedPrice =
-      this.calculateProductTax.calculateProductBruttoPrice(finalPrice);
-    this.logger.error(finalTaxedPrice);
-
+      this.calculateProductTax.calculateProductBruttoPrice(
+        this.calculateProductPrice.calculateTotalBruttoPrice(products),
+      );
+    this.logger.debug(finalTaxedPrice);
     return await BasketEntity.save({
       ...basket,
-      products: [...basket.products, product],
+      products: [...products, product],
       isEmpty: false,
       basketBrutto: Number(finalTaxedPrice),
     });
@@ -118,7 +108,7 @@ export class BasketService {
   }
 
   public async findBasketByIdQuery(id: string): Promise<getBasketResponse> {
-    this.logger.debug(`Printing BasketProduct with ID: ${id}.`);
+    this.logger.debug(`Printing Basket by ID: ${id}.`);
     return await this.dbBaseQuery()
       .select('basketProduct')
       .from(BasketEntity, 'basketProduct')
@@ -131,11 +121,20 @@ export class BasketService {
 
   public async updateBasketQuery(
     basket: BasketInterface,
-    itemToUpdate: BasketInterface,
-  ): Promise<updateBasketResponse> {
+    itemToAdd: ProductInterface,
+  ) {
+    const { products } = basket;
+    this.logger.verbose({ basket });
+    this.logger.verbose(products);
     return await BasketEntity.save({
       ...basket,
-      ...itemToUpdate,
+      products: [...products, itemToAdd],
+      isEmpty: false,
+      basketBrutto: Number(
+        this.calculateProductTax.calculateProductBruttoPrice(
+          this.calculateProductPrice.calculateTotalBruttoPrice(products),
+        ),
+      ),
     });
   }
 

@@ -12,9 +12,9 @@ import {
 } from '@nestjs/common';
 import { BasketService } from './basket.service';
 import {
-  BasketInterface,
   getAllBasketResponse,
   getBasketResponse,
+  ProductInterface,
   updateBasketResponse,
 } from '../types';
 
@@ -33,7 +33,7 @@ export class BasketController {
   addShopItemToTheBasket(
     @Param('basketId') basketId: string,
     @Body() productId: string,
-  ): Promise<any> {
+  ) {
     return this.basketService.addProductToTheBasketByUpdatingItQuery(
       basketId,
       productId,
@@ -56,13 +56,13 @@ export class BasketController {
   @HttpCode(202)
   public async updateBasket(
     @Param('id') id: string,
-    @Body() itemToUpdate: BasketInterface,
+    @Body() itemToAdd: ProductInterface,
   ): Promise<updateBasketResponse> {
     const basket = await this.basketService.findBasketByIdQuery(id);
     if (!basket) {
       throw new NotFoundException('Product not found');
     }
-    return this.basketService.updateBasketQuery(basket, itemToUpdate);
+    return this.basketService.updateBasketQuery(basket, itemToAdd);
   }
 
   @Delete(':id')

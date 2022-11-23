@@ -14,8 +14,7 @@ export class CalculateProductPrice {
         0.0,
       )
       .toFixed(2);
-    this.logger.error(superFinalPrice);
+    this.logger.debug(superFinalPrice);
     return Number(superFinalPrice);
-
   }
 }

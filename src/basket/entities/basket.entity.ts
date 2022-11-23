@@ -44,11 +44,6 @@ export class BasketEntity extends BaseEntity {
   basketBrutto: number;
 
   @Column({
-    nullable: true,
-  })
-  totalPrice: number;
-
-  @Column({
     default: true,
   })
   isEmpty: boolean;
