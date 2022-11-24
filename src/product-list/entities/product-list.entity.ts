@@ -3,20 +3,21 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from './product.entity';
+import { Product } from '../../product/entities/product.entity';
 
 @Entity()
 export class ProductList extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  listName: string;
+  @OneToOne(() => Product)
+  @JoinColumn()
+  product: Product;
 
   @Column({
     default: false,
@@ -45,10 +46,10 @@ export class ProductList extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  @ManyToMany(() => Product, (product: Product) => product.productList, {
-    onDelete: 'CASCADE',
-    eager: true,
-  })
-  @JoinTable()
-  products: Product[];
+  // @ManyToMany(() => Product, (product: Product) => product.productList, {
+  //   onDelete: 'CASCADE',
+  //   eager: true,
+  // })
+  // @JoinTable()
+  // products: Product[];
 }

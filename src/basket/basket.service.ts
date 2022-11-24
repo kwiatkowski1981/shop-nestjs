@@ -81,18 +81,6 @@ export class BasketService {
       basketBrutto: Number(finalTaxedPrice),
     });
 
-    // const updateQuery = await this.dbBaseQuery()
-    //   .update(BasketEntity)
-    //   .set({
-    //     ...basket,
-    //     products: [{ ...basket.products }, { product }],
-    //     isEmpty: false,
-    //     basketBrutto: product.price,
-    //   })
-    //   .where('id = :basketId', { basketId })
-    //   .execute();
-    // this.logger.debug({ updateQuery });
-    // return updateQuery;
   }
 
   public async findAllBasketsQuery(): Promise<BasketInterface[]> {
@@ -124,17 +112,17 @@ export class BasketService {
     itemToAdd: ProductInterface,
   ) {
     const { products } = basket;
+    const finalTaxedPrice =
+      this.calculateProductTax.calculateProductBruttoPrice(
+        this.calculateProductPrice.calculateTotalBruttoPrice(products),
+      );
     this.logger.verbose({ basket });
     this.logger.verbose(products);
     return await Basket.save({
       ...basket,
       products: [...products, itemToAdd],
       isEmpty: false,
-      basketBrutto: Number(
-        this.calculateProductTax.calculateProductBruttoPrice(
-          this.calculateProductPrice.calculateTotalBruttoPrice(products),
-        ),
-      ),
+      basketBrutto: Number(finalTaxedPrice),
     });
   }
 

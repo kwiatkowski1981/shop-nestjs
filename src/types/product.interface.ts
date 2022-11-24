@@ -3,7 +3,7 @@ import { InsertResult, UpdateResult } from 'typeorm';
 import { Basket } from '../basket/entities/basket.entity';
 import { ProductDescription } from '../product/entities/product-description.entity';
 import { Shop } from '../shop/entities/shop.entity';
-import { ProductList } from '../product/entities/product-list.entity';
+import { ProductList } from '../product-list/entities/product-list.entity';
 
 export interface ProductInterface {
   id?: string;

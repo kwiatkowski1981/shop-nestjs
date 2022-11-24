@@ -13,7 +13,6 @@ import { ProductDetail } from './product-details.entity';
 import { Basket } from '../../basket/entities/basket.entity';
 import { Shop } from '../../shop/entities/shop.entity';
 import { ProductDescription } from './product-description.entity';
-import { ProductList } from './product-list.entity';
 
 @Entity()
 export class Product extends BaseEntity {
@@ -73,10 +72,10 @@ export class Product extends BaseEntity {
   })
   shop: Shop;
 
-  @ManyToMany(
-    () => ProductList,
-    (productList: ProductList) => productList.products,
-    { onDelete: 'CASCADE' },
-  )
-  productList: ProductList;
+  // @ManyToMany(
+  //   () => ProductList,
+  //   (productList: ProductList) => productList.products,
+  //   { onDelete: 'CASCADE' },
+  // )
+  // productList: ProductList;
 }

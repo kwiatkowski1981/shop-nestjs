@@ -27,7 +27,7 @@ export class ProductService {
   private readonly logger = new Logger(ProductService.name);
   constructor(
     @Inject(forwardRef(() => BasketService))
-    private readonly basketService: BasketService,
+    private basketService: BasketService,
     @Inject(DataSource) private dataSource: DataSource,
   ) {}
 

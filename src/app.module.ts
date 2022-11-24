@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from '../db/data-source.dev';
 import { ShopModule } from './shop/shop.module';
 import { CalculationsModule } from './calculations/calculations.module';
+import { ProductListModule } from './product-list/product-list.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CalculationsModule } from './calculations/calculations.module';
     BasketModule,
     ShopModule,
     CalculationsModule,
+    ProductListModule,
   ],
   controllers: [AppController],
   providers: [AppService],
