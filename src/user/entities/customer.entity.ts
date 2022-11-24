@@ -8,11 +8,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
-import { ShopEntity } from '../../shop/entities/shop.entity';
+import { User } from './user.entity';
+import { Shop } from '../../shop/entities/shop.entity';
 
 @Entity()
-export class CustomerEntity extends BaseEntity {
+export class Customer extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -37,9 +37,9 @@ export class CustomerEntity extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  @OneToMany(() => UserEntity, (user: UserEntity) => user.customer)
-  userId: UserEntity[];
+  @OneToMany(() => User, (user: User) => user.customer)
+  userId: User[];
 
-  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.customers)
-  shopId: ShopEntity;
+  @ManyToMany(() => Shop, (shop: Shop) => shop.customers)
+  shopId: Shop;
 }

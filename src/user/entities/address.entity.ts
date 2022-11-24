@@ -6,10 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 
 @Entity()
-export class AddressEntity extends BaseEntity {
+export class Address extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -19,6 +19,6 @@ export class AddressEntity extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.address)
-  users: UserEntity[];
+  @ManyToOne(() => User, (user: User) => user.address)
+  users: User[];
 }

@@ -7,34 +7,31 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProductEntity } from '../../product/entities/product.entity';
-import { CustomerEntity } from '../../user/entities/customer.entity';
-import { UserEntity } from '../../user/entities/user.entity';
-import { BasketEntity } from '../../basket/entities/basket.entity';
+import { Product } from '../../product/entities/product.entity';
+import { Customer } from '../../user/entities/customer.entity';
+import { User } from '../../user/entities/user.entity';
+import { Basket } from '../../basket/entities/basket.entity';
 
 @Entity()
-export class ShopEntity extends BaseEntity {
+export class Shop extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToMany(() => ProductEntity, (product: ProductEntity) => product.shop)
+  @ManyToMany(() => Product, (product: Product) => product.shop)
   @JoinTable()
-  products: ProductEntity[];
+  products: Product[];
 
-  @ManyToMany(
-    () => CustomerEntity,
-    (customer: CustomerEntity) => customer.shopId,
-  )
+  @ManyToMany(() => Customer, (customer: Customer) => customer.shopId)
   @JoinTable()
-  customers: CustomerEntity[];
+  customers: Customer[];
 
-  @ManyToMany(() => UserEntity, (user: UserEntity) => user.shop)
+  @ManyToMany(() => User, (user: User) => user.shop)
   @JoinTable()
-  users: UserEntity[];
+  users: User[];
 
-  @ManyToMany(() => BasketEntity, (basket: BasketEntity) => basket.shopId)
+  @ManyToMany(() => Basket, (basket: Basket) => basket.shopId)
   @JoinTable()
-  baskets: BasketEntity[];
+  baskets: Basket[];
 
   @CreateDateColumn()
   createdAt: Date;

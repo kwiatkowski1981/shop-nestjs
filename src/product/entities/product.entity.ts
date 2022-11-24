@@ -9,13 +9,14 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProductDetailsEntity } from './product-details.entity';
-import { BasketEntity } from '../../basket/entities/basket.entity';
-import { ShopEntity } from '../../shop/entities/shop.entity';
-import { ProductDescriptionEntity } from './product-description.entity';
+import { ProductDetail } from './product-details.entity';
+import { Basket } from '../../basket/entities/basket.entity';
+import { Shop } from '../../shop/entities/shop.entity';
+import { ProductDescription } from './product-description.entity';
+import { ProductList } from './product-list.entity';
 
 @Entity()
-export class ProductEntity extends BaseEntity {
+export class Product extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -34,66 +35,48 @@ export class ProductEntity extends BaseEntity {
   })
   price: number;
 
-  @Column({
-    default: false,
-  })
-  isDiscounted: boolean;
-
-  @Column({
-    type: 'integer',
-    nullable: false,
-  })
-  quantity: number;
-
-  @Column({
-    default: false,
-  })
-  wasEverBought: boolean;
-
-  @Column({
-    default: 0,
-  })
-  boughtCounter: number;
-
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
+  @OneToOne(() => ProductDetail, (detail: ProductDetail) => detail.product, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  details: ProductDetail;
+
   @OneToOne(
-    () => ProductDetailsEntity,
-    (detail: ProductDetailsEntity) => detail.product,
+    () => ProductDescription,
+    (description: ProductDescription) => description.product,
     {
       eager: true,
       onDelete: 'CASCADE',
     },
   )
   @JoinColumn()
-  details: ProductDetailsEntity;
+  description: ProductDescription;
 
-  @OneToOne(
-    () => ProductDescriptionEntity,
-    (description: ProductDescriptionEntity) => description.product,
-    {
-      eager: true,
-      onDelete: 'CASCADE',
-    },
-  )
-  @JoinColumn()
-  description: ProductDescriptionEntity;
-
-  @ManyToMany(() => BasketEntity, (basket: BasketEntity) => basket.products, {
+  @ManyToMany(() => Basket, (basket: Basket) => basket.products, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
     eager: true,
   })
-  baskets: BasketEntity[];
+  baskets: Basket[];
 
-  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.products, {
+  @ManyToMany(() => Shop, (shop: Shop) => shop.products, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     eager: true,
   })
-  shop: ShopEntity;
+  shop: Shop;
+
+  @ManyToMany(
+    () => ProductList,
+    (productList: ProductList) => productList.products,
+    { onDelete: 'CASCADE' },
+  )
+  productList: ProductList;
 }

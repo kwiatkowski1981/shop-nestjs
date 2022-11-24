@@ -1,5 +1,5 @@
 import { InsertResult } from 'typeorm';
-import { ProductInterface } from './product-interface';
+import { ProductInterface } from './product.interface';
 
 export interface BasketInterface {
   id?: string;

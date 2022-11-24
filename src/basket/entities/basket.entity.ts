@@ -8,11 +8,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProductEntity } from '../../product/entities/product.entity';
-import { ShopEntity } from '../../shop/entities/shop.entity';
+import { Product } from '../../product/entities/product.entity';
+import { Shop } from '../../shop/entities/shop.entity';
 
 @Entity()
-export class BasketEntity extends BaseEntity {
+export class Basket extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -48,23 +48,19 @@ export class BasketEntity extends BaseEntity {
   })
   isEmpty: boolean;
 
-  @ManyToMany(
-    () => ProductEntity,
-    (product: ProductEntity) => product.baskets,
-    {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-  )
+  @ManyToMany(() => Product, (product: Product) => product.baskets, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable()
-  products: ProductEntity[];
+  products: Product[];
 
-  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.baskets, {
+  @ManyToMany(() => Shop, (shop: Shop) => shop.baskets, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     eager: true,
   })
-  shopId: ShopEntity;
+  shopId: Shop;
 
   productsCount: number;
 
@@ -73,6 +69,6 @@ export class BasketEntity extends BaseEntity {
   }
 
   static createNewBasket() {
-    return new BasketEntity();
+    return new Basket();
   }
 }

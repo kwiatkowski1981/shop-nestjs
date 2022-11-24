@@ -7,10 +7,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ProductEntity } from './product.entity';
+import { Product } from './product.entity';
 
 @Entity()
-export class ProductDetailsEntity extends BaseEntity {
+export class ProductDetail extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -26,8 +26,8 @@ export class ProductDetailsEntity extends BaseEntity {
   @UpdateDateColumn()
   lastUpdateAt: Date;
 
-  @OneToOne(() => ProductEntity, (product: ProductEntity) => product.details, {
+  @OneToOne(() => Product, (product: Product) => product.details, {
     onDelete: 'CASCADE',
   })
-  product: ProductEntity;
+  product: Product;
 }

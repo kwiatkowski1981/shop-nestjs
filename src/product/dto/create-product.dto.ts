@@ -1,4 +1,4 @@
-import { ProductDetailsEntity } from '../entities/product-details.entity';
+import { ProductDetail } from '../entities/product-details.entity';
 import {
   IsBoolean,
   IsDateString,
@@ -9,11 +9,11 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
-import { ProductDescriptionEntity } from '../entities/product-description.entity';
+import { ProductDescription } from '../entities/product-description.entity';
 
 export class CreateProductDto {
   @IsUUID()
-  id: string;
+  id?: string;
 
   @IsString()
   @Length(5, 55, { message: 'The name length is wrong' })
@@ -26,25 +26,13 @@ export class CreateProductDto {
   })
   price: number;
 
-  @IsNumber()
-  quantity: number;
-
-  @IsBoolean()
-  isDiscounted?: boolean;
-
-  @IsInt()
-  boughtCounter?: number;
-
-  @IsBoolean()
-  wasEverBought?: boolean;
-
   @IsDateString()
   createdAt?: Date;
 
   @IsDateString()
   lastUpdateAt?: Date;
 
-  details?: ProductDetailsEntity | null;
+  details?: ProductDetail | null;
 
-  description?: ProductDescriptionEntity | null;
+  description?: ProductDescription | null;
 }

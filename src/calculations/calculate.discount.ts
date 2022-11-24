@@ -1,4 +1,4 @@
-import { CustomerEntity } from '../user/entities/customer.entity';
+import { Customer } from '../user/entities/customer.entity';
 
 export class CalculateDiscount {
   private discountForStandard = 0.05;
@@ -25,10 +25,7 @@ export class CalculateDiscount {
     }
   }
 
-  public calculateDiscountPrice(
-    customer: CustomerEntity,
-    price: number,
-  ): number {
+  public calculateDiscountPrice(customer: Customer, price: number): number {
     if (customer.isVip) {
       return this.calculatePremiumDiscount(price);
     } else {

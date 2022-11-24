@@ -6,15 +6,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 
 @Entity()
-export class PowerUserEntity extends BaseEntity {
+export class PowerUser extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(() => UserEntity, (user: UserEntity) => user.powerUser)
-  userId: UserEntity[];
+  @OneToMany(() => User, (user: User) => user.powerUser)
+  userId: User[];
 
   @CreateDateColumn()
   createdAt: Date;

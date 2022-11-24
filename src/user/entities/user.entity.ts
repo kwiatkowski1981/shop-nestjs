@@ -9,14 +9,14 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PowerUserEntity } from './power-user.entity';
-import { AddressEntity } from './address.entity';
-import { CustomerEntity } from './customer.entity';
-import { BlackListUsersEntity } from './black-list-users.entity';
-import { ShopEntity } from '../../shop/entities/shop.entity';
+import { PowerUser } from './power-user.entity';
+import { Address } from './address.entity';
+import { Customer } from './customer.entity';
+import { BlackListUser } from './black-list-users.entity';
+import { Shop } from '../../shop/entities/shop.entity';
 
 @Entity()
-export class UserEntity extends BaseEntity {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -72,27 +72,21 @@ export class UserEntity extends BaseEntity {
   @Column()
   lastLogin: Date;
 
-  @ManyToOne(
-    () => PowerUserEntity,
-    (powerUser: PowerUserEntity) => powerUser.userId,
-  )
-  powerUser: PowerUserEntity;
+  @ManyToOne(() => PowerUser, (powerUser: PowerUser) => powerUser.userId)
+  powerUser: PowerUser;
+
+  @ManyToOne(() => Customer, (customer: Customer) => customer.userId)
+  customer: Customer;
+
+  @OneToMany(() => Address, (address: Address) => address.id)
+  address: Address;
 
   @ManyToOne(
-    () => CustomerEntity,
-    (customer: CustomerEntity) => customer.userId,
+    () => BlackListUser,
+    (blackListUsers: BlackListUser) => blackListUsers.id,
   )
-  customer: CustomerEntity;
+  blackList: BlackListUser;
 
-  @OneToMany(() => AddressEntity, (address: AddressEntity) => address.id)
-  address: AddressEntity;
-
-  @ManyToOne(
-    () => BlackListUsersEntity,
-    (blackListUsers: BlackListUsersEntity) => blackListUsers.id,
-  )
-  blackList: BlackListUsersEntity;
-
-  @ManyToMany(() => ShopEntity, (shop: ShopEntity) => shop.id)
-  shop: ShopEntity;
+  @ManyToMany(() => Shop, (shop: Shop) => shop.id)
+  shop: Shop;
 }

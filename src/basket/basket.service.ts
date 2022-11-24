@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ProductService } from '../product/product.service';
-import { BasketEntity } from './entities/basket.entity';
+import { Basket } from './entities/basket.entity';
 import {
   BasketInterface,
   createBasketResponse,
@@ -31,7 +31,7 @@ export class BasketService {
   ) {}
 
   private async createNewBasket2(): Promise<BasketInterface> {
-    return BasketEntity.createNewBasket();
+    return Basket.createNewBasket();
   }
 
   private dbBaseQuery() {
@@ -42,8 +42,8 @@ export class BasketService {
     this.logger.debug('Creating a new Basket');
     const query = await this.dbBaseQuery()
       .insert()
-      .into(BasketEntity)
-      .values(new BasketEntity())
+      .into(Basket)
+      .values(new Basket())
       .execute();
     this.logger.debug({ query });
     return query;
@@ -74,7 +74,7 @@ export class BasketService {
         this.calculateProductPrice.calculateTotalBruttoPrice(products),
       );
     this.logger.debug(finalTaxedPrice);
-    return await BasketEntity.save({
+    return await Basket.save({
       ...basket,
       products: [...products, product],
       isEmpty: false,
@@ -99,7 +99,7 @@ export class BasketService {
     this.logger.debug(`Printing all DB BasketProducts`);
     return await this.dbBaseQuery()
       .select('basketProduct')
-      .from(BasketEntity, 'basketProduct')
+      .from(Basket, 'basketProduct')
       .orderBy('basketProduct.id', 'DESC')
       .leftJoinAndSelect('basketProduct.products', 'product')
       .leftJoinAndSelect('product.details', 'details')
@@ -111,7 +111,7 @@ export class BasketService {
     this.logger.debug(`Printing Basket by ID: ${id}.`);
     return await this.dbBaseQuery()
       .select('basketProduct')
-      .from(BasketEntity, 'basketProduct')
+      .from(Basket, 'basketProduct')
       .where('basketProduct.id = :id', { id })
       .leftJoinAndSelect('basketProduct.products', 'product')
       .leftJoinAndSelect('product.details', 'details')
@@ -126,7 +126,7 @@ export class BasketService {
     const { products } = basket;
     this.logger.verbose({ basket });
     this.logger.verbose(products);
-    return await BasketEntity.save({
+    return await Basket.save({
       ...basket,
       products: [...products, itemToAdd],
       isEmpty: false,
@@ -143,7 +143,7 @@ export class BasketService {
     return await this.dataSource
       .createQueryBuilder()
       .delete()
-      .from(BasketEntity)
+      .from(Basket)
       .where('id = :id', { id })
       .execute();
   }

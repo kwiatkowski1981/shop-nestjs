@@ -5,7 +5,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { ProductEntity } from './entities/product.entity';
+import { Product } from './entities/product.entity';
 import { DataSource, InsertResult } from 'typeorm';
 import { BasketService } from '../basket/basket.service';
 import {
@@ -17,8 +17,8 @@ import {
   ProductInterface,
   updateProductResponse,
 } from '../types';
-import { ProductDetailsEntity } from './entities/product-details.entity';
-import { ProductDescriptionEntity } from './entities/product-description.entity';
+import { ProductDetail } from './entities/product-details.entity';
+import { ProductDescription } from './entities/product-description.entity';
 import { UpdateProductDetailsDto } from './dto/update-product-details.dto';
 import { UpdateProductDescriptionDto } from './dto/update-product-desription.dto';
 
@@ -60,7 +60,7 @@ export class ProductService {
     propertyName: string,
   ): Promise<void> {
     return await this.dbBaseQuery()
-      .relation(ProductEntity, propertyName)
+      .relation(Product, propertyName)
       .of(productId)
       .set(productPropertyId);
   }
@@ -89,7 +89,7 @@ export class ProductService {
   public async createNewProductQuery(
     productToCreate: ProductInterface,
   ): Promise<createProductResponse> {
-    return await this.createNewItemQuery(productToCreate, ProductEntity);
+    return await this.createNewItemQuery(productToCreate, Product);
   }
 
   public async createNewProductDetailQuery(
@@ -102,7 +102,7 @@ export class ProductService {
     }
     const addDetailQuery = await this.createNewItemQuery(
       addDetail,
-      ProductDetailsEntity,
+      ProductDetail,
     );
     const productDetailId = await this.getProductDetailId(addDetailQuery);
     return await this.setOneToOneEntityRelation(
@@ -122,7 +122,7 @@ export class ProductService {
     }
     const addDescriptionQuery = await this.createNewItemQuery(
       addDescription,
-      ProductDescriptionEntity,
+      ProductDescription,
     );
     const productDescriptionId = await this.getProductDetailId(
       addDescriptionQuery,
@@ -138,7 +138,7 @@ export class ProductService {
     this.logger.debug(`Printing all DB Products`);
     return await this.dbBaseQuery()
       .select('product')
-      .from(ProductEntity, 'product')
+      .from(Product, 'product')
       .orderBy('product.id', 'DESC')
       .leftJoinAndSelect('product.details', 'details')
       .leftJoinAndSelect('product.description', 'description')
@@ -153,7 +153,7 @@ export class ProductService {
     );
     return await this.dbBaseQuery()
       .select('product')
-      .from(ProductEntity, 'product')
+      .from(Product, 'product')
       .where('product.description LIKE :searchTerm', {
         searchTerm: `%${searchTerm}%`,
       })
@@ -167,7 +167,7 @@ export class ProductService {
     this.logger.debug(`Printing the Product with id: ${id}`);
     return await this.dbBaseQuery()
       .select('product')
-      .from(ProductEntity, 'product')
+      .from(Product, 'product')
       .where('product.id = :id', { id })
       .leftJoinAndSelect('product.details', 'details')
       .leftJoinAndSelect('product.description', 'description')
@@ -180,7 +180,7 @@ export class ProductService {
   ): Promise<updateProductResponse> {
     this.logger.debug(`Updating the Product with id: ${id}`);
     const updateQuery = await this.dbBaseQuery()
-      .update(ProductEntity)
+      .update(Product)
       .set({
         ...shopItemToUpdate,
       })
@@ -192,26 +192,26 @@ export class ProductService {
   }
 
   public async updateProductDetailsQuery(
-    details: ProductDetailsEntity,
+    details: ProductDetail,
     input: UpdateProductDetailsDto,
-  ): Promise<ProductDetailsEntity> {
+  ): Promise<ProductDetail> {
     this.logger.debug(
       `Update encji ProductDetailsEntity wyszukanej po id ${details.id}`,
     );
-    return await ProductDetailsEntity.save({
+    return await ProductDetail.save({
       ...details,
       ...input,
     });
   }
 
   public async updateProductDescriptionQuery(
-    description: ProductDescriptionEntity,
+    description: ProductDescription,
     input: UpdateProductDescriptionDto,
-  ): Promise<ProductDescriptionEntity> {
+  ): Promise<ProductDescription> {
     this.logger.debug(
       `Update encji ProductDescriptionEntity wyszukanej po id: ${description.id}`,
     );
-    return await ProductDescriptionEntity.save({
+    return await ProductDescription.save({
       ...description,
       ...input,
     });
@@ -219,29 +219,18 @@ export class ProductService {
 
   public async removeProductDetailQuery(productId: string) {
     const { details } = await this.findProductById(productId);
-    await this.removeOneToOneEntityRelation(
-      productId,
-      ProductEntity,
-      'details',
-    );
+    await this.removeOneToOneEntityRelation(productId, Product, 'details');
     this.logger.debug(`Deleting the ProductDetail with id: ${details.id}`);
-    return await this.removeOneItemById(details.id, ProductDetailsEntity);
+    return await this.removeOneItemById(details.id, ProductDetail);
   }
 
   public async removeProductDescriptionQuery(productId: string) {
     const { description } = await this.findProductById(productId);
-    await this.removeOneToOneEntityRelation(
-      productId,
-      ProductEntity,
-      'description',
-    );
+    await this.removeOneToOneEntityRelation(productId, Product, 'description');
     this.logger.debug(
       `Deleting the ProductDescription with id: ${description.id}`,
     );
-    return await this.removeOneItemById(
-      description.id,
-      ProductDescriptionEntity,
-    );
+    return await this.removeOneItemById(description.id, ProductDescription);
   }
 
   public async removeProductById(productId: string) {
@@ -253,6 +242,6 @@ export class ProductService {
       await this.removeProductDetailQuery(productId);
     }
     this.logger.debug(`Deleting a Product with id: ${productId}`);
-    return this.removeOneItemById(productId, ProductEntity);
+    return this.removeOneItemById(productId, Product);
   }
 }
