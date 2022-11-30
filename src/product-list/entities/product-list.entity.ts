@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -15,7 +15,9 @@ export class ProductList extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Product)
+  @OneToMany(() => Product, (product: Product) => product.productList, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   product: Product;
 

@@ -99,6 +99,9 @@ export class ProductController {
     const { details } = await this.productService.findProductById(id);
     if (!details) {
       throw new NotFoundException();
+      // todo nie działa bo rzuca:
+      // todo nie zupdatuje czegos czego nie ma w bazie i pokazuje null
+      // todo " ERROR [ExceptionsHandler] Cannot destructure property 'details' of '(intermediate value)' as it is null."
     }
     return this.productService.updateProductDetailsQuery(details, input);
   }

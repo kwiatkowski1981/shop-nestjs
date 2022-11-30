@@ -1,8 +1,15 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductListDto } from './dto/create-product-list.dto';
 import { UpdateProductListDto } from './dto/update-product-list.dto';
 // import { ProductService } from '../product/product.service';
 import { DataSource } from 'typeorm';
+import { ProductList } from './entities/product-list.entity';
 
 @Injectable()
 export class ProductListService {
@@ -13,23 +20,60 @@ export class ProductListService {
     @Inject(DataSource) private dataSource: DataSource,
   ) {}
 
-  create(createProductListDto: CreateProductListDto) {
-    return 'This action adds a new productList';
+  private dbBaseQuery() {
+    return this.dataSource.createQueryBuilder();
   }
 
-  findAll() {
-    return `This action returns all productList`;
+  public async create(newList: CreateProductListDto) {
+    const query = await this.dbBaseQuery()
+      .insert()
+      .into(ProductList)
+      .values(newList)
+      .execute();
+    this.logger.debug({ query });
+    return query;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} productList`;
+  public async findAll() {
+    this.logger.debug(`Printing all DB Product List`);
+    return await this.dbBaseQuery()
+      .select('productList')
+      .from(ProductList, 'productList')
+      .orderBy('productList.id', 'DESC')
+      .leftJoinAndSelect('productList.product', 'product')
+      .leftJoinAndSelect('product.details', 'details')
+      .leftJoinAndSelect('product.description', 'description')
+      .getMany();
   }
 
-  update(id: number, updateProductListDto: UpdateProductListDto) {
-    return `This action updates a #${id} productList`;
+  public async findOne(id: string) {
+    this.logger.debug(`Printing all DB Product List`);
+    return await this.dbBaseQuery()
+      .select('productList')
+      .from(ProductList, 'productList')
+      .where('id = :id', { id })
+      .orderBy('productList.id', 'DESC')
+      .leftJoinAndSelect('productList.product', 'product')
+      .leftJoinAndSelect('product.details', 'details')
+      .leftJoinAndSelect('product.description', 'description')
+      .getMany();
   }
 
-  remove(id: number) {
+  public async update(listId: string, input: UpdateProductListDto) {
+    this.logger.debug(
+      `Update encji ProductDescriptionEntity wyszukanej po id: ${listId}`,
+    );
+    const productList = await this.findOne(listId);
+    this.logger.debug({ productList });
+    if (!productList) {
+      throw new NotFoundException();
+    }
+    return await ProductList.save({
+      ...input,
+    });
+  }
+
+  public async remove(id: number) {
     return `This action removes a #${id} productList`;
   }
 }

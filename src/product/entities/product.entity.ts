@@ -4,15 +4,16 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
+  ManyToMany, ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  UpdateDateColumn
+} from "typeorm";
 import { ProductDetail } from './product-details.entity';
 import { Basket } from '../../basket/entities/basket.entity';
 import { Shop } from '../../shop/entities/shop.entity';
 import { ProductDescription } from './product-description.entity';
+import { ProductList } from "../../product-list/entities/product-list.entity";
 
 @Entity()
 export class Product extends BaseEntity {
@@ -72,10 +73,10 @@ export class Product extends BaseEntity {
   })
   shop: Shop;
 
-  // @ManyToMany(
-  //   () => ProductList,
-  //   (productList: ProductList) => productList.products,
-  //   { onDelete: 'CASCADE' },
-  // )
-  // productList: ProductList;
+  @ManyToOne(
+    () => ProductList,
+    (productList: ProductList) => productList.product,
+    { onDelete: 'CASCADE' },
+  )
+  productList: ProductList;
 }
