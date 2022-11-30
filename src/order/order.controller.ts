@@ -3,9 +3,26 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
+
+// todo metoda buy musi odpalić kilka rzeczy jak:
+// todo zapisz transakcje() w DB
+// todo cena netto()
+// todo odliczyć zakupione produkty()
+// todo @mail z powiadomieniem o zakupie()
+// todo sms z powiadomieniem o zakupie()
+// todo wystaw fakturę()
+// todo sprawdź clientScoring czy klient kwalifikuje się na isVip(Client)
+// todo softDelete(Basket)
+// todo wyzerować koszyk na pusty kasa 0 itd..
+// todo create new Basket()
+
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
+
+  // todo wejscie nowego zamowienia
+  // todo koszyk wszystkie ceny itd
+  // todo
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
@@ -32,3 +49,4 @@ export class OrderController {
     return this.orderService.remove(+id);
   }
 }
+

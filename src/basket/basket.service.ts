@@ -29,18 +29,7 @@ export class BasketService {
     @Inject(CalculateProductTax)
     private calculateProductTax: CalculateProductTax,
   ) {}
-
-  // todo metoda buy musi odpalić kilka rzeczy jak:
-  // todo zapisz transakcje() w DB
-  // todo cena netto()
-  // todo odliczyć zakupione produkty()
-  // todo @mail z powiadomieniem o zakupie()
-  // todo sms z powiadomieniem o zakupie()
-  // todo wystaw fakturę()
-  // todo sprawdź clientScoring czy klient kwalifikuje się na isVip(Client)
-  // todo softDelete(Basket)
-  // todo wyzerować koszyk na pusty kasa 0 itd..
-  // todo create new Basket()
+// todo sprawdzam na liscie produktow czy produkt jest dostepny (quantity > 0) && (name === name) (id !== 0)
 
   private async createNewBasket2(): Promise<BasketInterface> {
     return Basket.createNewBasket();
